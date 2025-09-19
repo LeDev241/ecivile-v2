@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+// use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -56,11 +57,11 @@ class User extends Authenticatable
         return $this->belongsTo(Hopital::class, 'hopital_id');
     }
 
-     // Relation un utilisateur appartient à une seule mairie
-     public function mairie()
-     {
-         return $this->belongsTo(Mairie::class, 'mairie_id');
-     }
+    // Relation un utilisateur appartient à une seule mairie
+    public function mairie()
+    {
+        return $this->belongsTo(Mairie::class, 'mairie_id');
+    }
 
 
     // Naissances créées par un agent d’hôpital

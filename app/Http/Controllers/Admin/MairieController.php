@@ -55,6 +55,8 @@ class MairieController extends Controller
             ->with('success', 'Mairie créée avec succès.');
     }
 
+    
+
     public function show(Mairie $mairie): Response
     {
         $mairie->load(['agents', 'user', 'province', 'commune', 'arrondissement']);

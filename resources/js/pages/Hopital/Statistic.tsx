@@ -1,166 +1,184 @@
+import ChartCard from '@/components/ChartCard';
+import StatCard from '@/components/StatCard';
 import HopitalLayout from '@/layouts/hopital-layout';
+import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { FolderPlus, TrendingUp, UserCheck, Users } from 'lucide-react';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface StatisticProps {
-    overview: {
-        totalDeclarations: number;
-        averagePerDay: number;
-        averagePerAgent: number;
-        completionRate: number;
-        qualityScore: number;
-    };
-    genderDistribution: {
-        distribution: { label: string; code: number; count: number; percentage: number }[];
-        total: number;
-        sexRatio: number;
-        diversityIndex: number;
-    };
-    agentPerformance: {
-        agents: {
-            name: string;
-            totalDeclarations: number;
-            percentage: number;
-            averagePerDay: number;
-            lastActivity: string;
-        }[];
-        totalAgents: number;
-    };
-    timeTrends: {
-        timeline: { period: string; declarations: number; averagePerAgent: number }[];
-        trend: string;
-    };
-    periodComparison: {
-        current: number;
-        previous: number;
-        change: number;
-        trend: string;
-    };
-    forecasting: {
-        nextWeekPrediction: number;
-        confidence: number;
-        trend: string;
-    };
-    metadata: {
-        generatedAt: string;
-        filters: Record<string, any>;
-    };
+    totalDeclarations: number;
+    bySex: Record<string, number>;
+    byCreator: Record<string, number>;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A569BD', '#FF6384'];
+const MODERN_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
 
-export default function Statistic({
-    overview,
-    genderDistribution,
-    agentPerformance,
-    timeTrends,
-    periodComparison,
-    forecasting,
-    metadata,
-}: StatisticProps) {
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
+                <p className="font-medium text-gray-900">{label}</p>
+                <p className="font-semibold text-blue-600">
+                    {payload[0].value} déclaration{payload[0].value > 1 ? 's' : ''}
+                </p>
+            </div>
+        );
+    }
+    return null;
+};
+
+const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Statistiques des Déclarations',
+            href: route('dashboard'),
+        },
+    ]
+
+
+export default function Statistic({ totalDeclarations, bySex, byCreator }: StatisticProps) {
+    const bySexData = Object.entries(bySex).map(([key, value]) => ({
+        name: key === 'M' ? 'Masculin' : key === 'F' ? 'Féminin' : key,
+        value,
+        percentage: ((value / totalDeclarations) * 100).toFixed(1),
+    }));
+
+    const byCreatorData = Object.entries(byCreator).map(([key, value]) => ({
+        name: key,
+        value,
+        percentage: ((value / totalDeclarations) * 100).toFixed(1),
+    }));
+
+    // Statistiques dérivées
+    const mostActiveCreator = byCreatorData.reduce((prev, current) => (prev.value > current.value ? prev : current));
+
     return (
-        <HopitalLayout>
-            <Head title="Statistiques - Hôpital" />
+        <HopitalLayout breadcrumbs={breadcrumbs}>
+            <Head title="Tableau de Bord - Statistiques des Déclarations" />
 
-            <div className="space-y-8 p-6">
-                <h1 className="mb-4 text-2xl font-bold">Tableau de bord statistique</h1>
-
-                {/* Aperçu général */}
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
-                    <Card title="Total déclarations" value={overview.totalDeclarations} />
-                    <Card title="Moyenne/jour" value={overview.averagePerDay} />
-                    <Card title="Moyenne/agent" value={overview.averagePerAgent} />
-                    <Card title="Taux complétion" value={`${overview.completionRate}%`} />
-                    <Card title="Qualité" value={overview.qualityScore} />
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <div className="mb-6 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4">
+                    <StatCard title="Total des déclarations" value={totalDeclarations.toLocaleString()} icon={FolderPlus} bgColor="bg-blue-600" />
+                    <StatCard title="Agents actifs" value={Object.keys(byCreator).length} icon={UserCheck} bgColor="bg-purple-600" />
+                    <StatCard title="Agent le plus actif" value={mostActiveCreator.value} icon={TrendingUp} bgColor="bg-orange-600" />
                 </div>
 
-                {/* Répartition par sexe */}
-                <div className="rounded bg-white p-4 shadow">
-                    <h2 className="mb-2 text-lg font-semibold">Répartition par sexe</h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                            <Pie
-                                data={genderDistribution.distribution.length ? genderDistribution.distribution : [{ label: 'Inconnu', count: 1 }]}
-                                dataKey="count"
-                                nameKey="label"
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={100}
-                                label
-                            >
-                                {genderDistribution.distribution.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
+                {/* Graphiques */}
+                <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
+                    {/* Graphique par sexe -*/}
+                    <ChartCard title="Répartition par genre" subtitle={`${bySexData.length} catégories identifiées`} icon={Users}>
+                        <ResponsiveContainer width="100%" height={350}>
+                            <PieChart>
+                                <Pie
+                                    data={bySexData}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={120}
+                                    paddingAngle={2}
+                                    label={({ name, percentage }) => `${name}: ${percentage}%`}
+                                    labelLine={false}
+                                >
+                                    {bySexData.map((entry, index) => (
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={MODERN_COLORS[index % MODERN_COLORS.length]}
+                                            className="transition-opacity duration-200 hover:opacity-80"
+                                        />
+                                    ))}
+                                </Pie>
+                                <Tooltip content={<CustomTooltip />} />
+                                <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </ChartCard>
 
-                            <Tooltip />
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
+                    {/* Graphique par créateur - Version Bar Chart */}
+                    <ChartCard title="Performance par agent" subtitle={`${byCreatorData.length} agents contributeurs`} icon={UserCheck}>
+                        <ResponsiveContainer width="100%" height={350}>
+                            <BarChart data={byCreatorData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} interval={0} fontSize={12} />
+                                <YAxis stroke="#666" />
+                                <Tooltip content={<CustomTooltip />} />
+                                <Bar
+                                    dataKey="value"
+                                    fill="url(#colorGradient)"
+                                    radius={[4, 4, 0, 0]}
+                                    className="transition-opacity duration-200 hover:opacity-80"
+                                >
+                                    {byCreatorData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={MODERN_COLORS[index % MODERN_COLORS.length]} />
+                                    ))}
+                                </Bar>
+                                <defs>
+                                    <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1} />
+                                    </linearGradient>
+                                </defs>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </ChartCard>
                 </div>
 
-                {/* Performance des agents */}
-                <div className="rounded bg-white p-4 shadow">
-                    <h2 className="mb-2 text-lg font-semibold">Performance des agents</h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={agentPerformance.agents}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="totalDeclarations" fill="#8884d8" name="Déclarations" />
-                            <Bar dataKey="averagePerDay" fill="#82ca9d" name="Moy./jour" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
+                {/* Tableau récapitulatif */}
+                <div className="mt-4">
+                    <ChartCard title="Récapitulatif détaillé" subtitle="Vue d'ensemble des performances">
+                        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                            {/* Tableau par genre */}
+                            <div>
+                                <h4 className="mb-4 text-sm font-semibold tracking-wide text-gray-900 uppercase">Répartition par genre</h4>
+                                <div className="space-y-3">
+                                    {bySexData.map((item, index) => (
+                                        <div key={item.name} className="flex items-center justify-between rounded-lg bg-gray-50 p-3">
+                                            <div className="flex items-center space-x-3">
+                                                <div
+                                                    className="h-4 w-4 rounded-full"
+                                                    style={{ backgroundColor: MODERN_COLORS[index % MODERN_COLORS.length] }}
+                                                />
+                                                <span className="font-medium text-gray-900">{item.name}</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="font-bold text-gray-900">{item.value}</span>
+                                                <span className="ml-2 text-sm text-gray-600">({item.percentage}%)</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
 
-                {/* Tendances temporelles */}
-                <div className="rounded bg-white p-4 shadow">
-                    <h2 className="mb-2 text-lg font-semibold">Tendances temporelles</h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={timeTrends.timeline}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="period" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line type="monotone" dataKey="declarations" stroke="#8884d8" name="Déclarations" />
-                            <Line type="monotone" dataKey="averagePerAgent" stroke="#82ca9d" name="Moy./agent" />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
-
-                {/* Comparaison et prévisions */}
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <Card
-                        title="Comparaison période"
-                        value={`${periodComparison.current} vs ${periodComparison.previous}`}
-                        sub={`Évolution: ${periodComparison.change}% (${periodComparison.trend})`}
-                    />
-                    <Card
-                        title="Prévisions semaine prochaine"
-                        value={forecasting.nextWeekPrediction}
-                        sub={`Confiance: ${forecasting.confidence}% (${forecasting.trend})`}
-                    />
-                </div>
-
-                {/* Métadonnées */}
-                <div className="mt-6 text-sm text-gray-500">
-                    <p>Généré le : {new Date(metadata.generatedAt).toLocaleString()}</p>
-                    <p>Filtres appliqués : {JSON.stringify(metadata.filters)}</p>
+                            {/* Top 5 agents */}
+                            <div>
+                                <h4 className="mb-4 text-sm font-semibold tracking-wide text-gray-900 uppercase">
+                                    Top agents (par nombre de déclarations)
+                                </h4>
+                                <div className="space-y-3">
+                                    {byCreatorData
+                                        .sort((a, b) => b.value - a.value)
+                                        .slice(0, 5)
+                                        .map((item, index) => (
+                                            <div key={item.name} className="flex items-center justify-between rounded-lg bg-gray-50 p-3">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600">
+                                                        {index + 1}
+                                                    </div>
+                                                    <span className="font-medium text-gray-900">{item.name}</span>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="font-bold text-gray-900">{item.value}</span>
+                                                    <span className="ml-2 text-sm text-gray-600">({item.percentage}%)</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        </div>
+                    </ChartCard>
                 </div>
             </div>
         </HopitalLayout>
-    );
-}
-
-function Card({ title, value, sub }: { title: string; value: any; sub?: string }) {
-    return (
-        <div className="rounded bg-white p-4 text-center shadow">
-            <h3 className="text-sm font-medium text-gray-500">{title}</h3>
-            <p className="text-xl font-bold">{value}</p>
-            {sub && <p className="text-xs text-gray-400">{sub}</p>}
-        </div>
     );
 }

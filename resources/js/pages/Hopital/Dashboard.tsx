@@ -33,7 +33,7 @@ export default function HopitalDashboard({ declarationsCount, newDeclarationsCou
         <HopitalLayout breadcrumbs={breadcrumbs}>
             <Head title={`Tablea de bord - ${user.hopital?.nom}`}/>
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 ">
                     <StatCard
                         icon={FolderPlus}
                         title="Déclarations au total"
@@ -42,7 +42,7 @@ export default function HopitalDashboard({ declarationsCount, newDeclarationsCou
                     />
                     <StatCard
                         icon={Users}
-                        title="Nouvelles déclarations (7j)"
+                        title="Depuis les (7j) derniers"
                         value={newDeclarationsCount}
                         bgColor="bg-gradient-to-br from-purple-500 to-indigo-500"
                     />

@@ -11,7 +11,7 @@ class MairieRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,10 +23,10 @@ class MairieRequest extends FormRequest
     {
         return [
             'nom' => 'required|string|max:255',
-            'description_courte' => 'nullable|string|max:500',
-            'telephone_principal' => 'required|string|max:20|unique:mairies',
+            'description_courte' => 'nullable|string',
+            'telephone_principal' => 'required|string|max:20',
             'email' => 'required|email|unique:mairies|max:255',
-            'code_postal' => 'nullable|string|max:10',
+            'code_postal' => 'required|string|max:10',
             'province_id' => 'required|exists:provinces,id',
             'commune_id' => 'required|exists:communes,id',
             'arrondissement_id' => 'required|exists:arrondissements,id',
