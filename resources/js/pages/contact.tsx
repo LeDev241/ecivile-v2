@@ -3,12 +3,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { SharedData } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Welcome({ auth }) {
+export default function Welcome({ auth } : SharedData) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',

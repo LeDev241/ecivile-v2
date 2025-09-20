@@ -7,6 +7,8 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Head, useForm } from '@inertiajs/react';
 import { Save } from 'lucide-react';
 
+
+
 export default function Edit({ hopital, mairies }) {
     const { data, setData, put, processing, errors } = useForm({
         nom: hopital.nom,

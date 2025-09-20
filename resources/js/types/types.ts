@@ -8,7 +8,6 @@ export interface User {
     mairie_id?: number;
     hopital_id?: number;
 
-    // Relations optionnelles
     mairie?: {
         id: number;
         nom: string;
@@ -59,7 +58,9 @@ export interface Hopital {
     adresse_complete: string;
     description_courte: string;
     telephone_principal: string;
+    type_etablissement: string,
     code_postal: string;
+    mairie?: Mairie
     user_id: number;
     mairie_id: number;
 
@@ -144,16 +145,7 @@ export interface PaginationData<T> {
     prev_page_url: string | null;
 }
 
-export interface IndexProps {
-    declarations: PaginationData<Declaration>;
-    filters: {
-        field?: string;
-        query?: string;
-        status?: string;
-    };
-    flash: Flash,
-    mairies: PaginationData<Mairie>;
-}
+
 
 export interface StatusCounts {
     recues_en_attente: number;
@@ -161,15 +153,16 @@ export interface StatusCounts {
     rejetees: number;
 }
 
-export interface PageProps {
-    declaration: Declaration;
-    provinces: Province[];
-    communes: Commune[];
-    arrondissements: Arrondissement[];
-    mairie: Mairie;
-    user: User;
-    hopital: Hopital;
+
+export interface RecentEntity {
+    id: number;
+    nom: string;
+    adresse_complete?: string | null;
+    type: 'mairie' | 'hopital' | 'user';
+    created_at: string;
 }
+
+
 
 export interface HopitalDashboardProps {
     declarationsCount: number;
@@ -185,14 +178,6 @@ export interface MairieDashboardProps {
     user: User;
 }
 
-export interface RecentEntity {
-    id: number;
-    nom: string;
-    adresse_complete?: string | null;
-    type: 'mairie' | 'hopital' | 'user';
-    created_at: string;
-}
-
 export interface AdminPageProps {
     mairiesCount: number;
     hopitauxCount: number;
@@ -204,6 +189,30 @@ export interface AdminPageProps {
 
 export interface ShowProps {
     mairie: Mairie;
+    hopital: Hopital,
     agents: Agent[];
     flash: Flash;
 }
+
+export interface PageProps {
+    declaration: Declaration;
+    provinces: Province[];
+    communes: Commune[];
+    arrondissements: Arrondissement[];
+    mairie: Mairie;
+    user: User;
+    hopital: Hopital;
+}
+
+export interface IndexProps {
+    declarations: PaginationData<Declaration>;
+    filters: {
+        field?: string;
+        query?: string;
+        status?: string;
+    };
+    flash: Flash,
+    mairies: PaginationData<Mairie>;
+    hopitaux: PaginationData<Hopital>
+}
+

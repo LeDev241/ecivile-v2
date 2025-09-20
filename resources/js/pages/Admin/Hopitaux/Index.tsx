@@ -3,12 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AdminLayout from '@/layouts/admin-layout';
+import { IndexProps } from '@/types/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Edit2, Eye, LayoutGrid, Plus, TableIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
-export default function Index({ hopitaux, flash }) {
+export default function Index({ hopitaux, flash }: IndexProps) {
     const { delete: destroy } = useForm();
     const [view, setView] = useState<'table' | 'card'>('table');
 
@@ -30,7 +31,7 @@ export default function Index({ hopitaux, flash }) {
 
     const hopitauxData = hopitaux.data || [];
 
-    const handleDelete = (hopitalId) => {
+    const handleDelete = (hopitalId : number) => {
         destroy(route('admin.hopitaux.destroy', hopitalId));
     };
 

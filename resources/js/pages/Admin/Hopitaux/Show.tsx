@@ -5,16 +5,17 @@ import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AdminLayout from '@/layouts/admin-layout';
+import { ShowProps } from '@/types/types';
 import { Head, useForm } from '@inertiajs/react';
 import { LayoutGrid, TableIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
-export default function Show({ hopital, agents, flash }) {
+export default function Show({ hopital, agents, flash }: ShowProps) {
     const { delete: destroy } = useForm();
     const [view, setView] = useState<'table' | 'card'>('table');
 
-    const handleDeleteAgent = (agentId) => {
+    const handleDeleteAgent = (agentId : number) => {
         destroy(
             route('admin.hopitaux.agents.destroy', {
                 hopital: hopital.id,

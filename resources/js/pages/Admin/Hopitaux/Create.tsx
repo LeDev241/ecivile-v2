@@ -7,7 +7,7 @@ import AdminLayout from '@/layouts/admin-layout';
 import { Head, useForm } from '@inertiajs/react';
 import { Save } from 'lucide-react';
 
-export default function Create({ mairies }) {
+export default function Create({ mairies } : ) {
     const { data, setData, post, processing, errors } = useForm({
         nom: '',
         description_courte: '',
