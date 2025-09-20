@@ -1,73 +1,25 @@
+// ===================== USERS & AGENTS =====================
 export interface User {
     id: number;
     name: string;
     email: string;
     role?: string;
-    created_at?: string;
-    updated_at?: string;
     mairie_id?: number;
     hopital_id?: number;
+    created_at?: string;
+    updated_at?: string;
 
-    mairie?: {
-        id: number;
-        nom: string;
-        adresse_complete?: string;
-    } | null;
-
-    hopital?: {
-        id: number;
-        nom: string;
-        adresse_complete?: string;
-    } | null;
+    mairie?: Mairie | null;
+    hopital?: Hopital | null;
 }
 
-export interface Mairie {
+export interface Agent {
     id: number;
-    nom: string;
+    name: string;
     email: string;
-    adresse_complete: string;
-    description_courte: string;
-    telephone_principal: string;
-    code_postal: string;
-    user_id: number;
-    province_id: number;
-    commune_id: number;
-    arrondissement_id: number;
-
-    province?: {
-        id: number;
-        nom: string;
-    };
-    commune?: {
-        id: number;
-        nom: string;
-    };
-    arrondissement?: {
-        id: number;
-        nom: string;
-    };
-
-    created_at: string;
-    updated_at: string;
 }
 
-export interface Hopital {
-    id: number;
-    nom: string;
-    email: string;
-    adresse_complete: string;
-    description_courte: string;
-    telephone_principal: string;
-    type_etablissement: string,
-    code_postal: string;
-    mairie?: Mairie
-    user_id: number;
-    mairie_id: number;
-
-    created_at: string;
-    updated_at: string;
-}
-
+// ===================== LOCALISATION =====================
 export interface Province {
     id: number;
     nom: string;
@@ -85,6 +37,45 @@ export interface Arrondissement {
     nom: string;
 }
 
+// ===================== STRUCTURES =====================
+export interface Mairie {
+    id: number;
+    nom: string;
+    email: string;
+    adresse_complete: string;
+    description_courte: string;
+    telephone_principal: string;
+    code_postal: string;
+    user_id: number;
+    province_id: number;
+    commune_id: number;
+    arrondissement_id: number;
+    created_at: string;
+    updated_at: string;
+
+    province?: Province;
+    commune?: Commune;
+    arrondissement?: Arrondissement;
+}
+
+export interface Hopital {
+    id: number;
+    nom: string;
+    email: string;
+    adresse_complete: string;
+    description_courte: string;
+    telephone_principal: string;
+    type_etablissement: string;
+    code_postal: string;
+    user_id: number;
+    mairie_id: number;
+    created_at: string;
+    updated_at: string;
+
+    mairie?: Mairie;
+}
+
+// ===================== DECLARATION =====================
 export interface Declaration {
     id: number;
     nom_enfant: string;
@@ -93,43 +84,44 @@ export interface Declaration {
     date_naissance: string;
     sexe: string;
     lieu_naissance: string;
+
     nom_pere: string;
     prenom_pere: string;
     profession_pere: string;
     nationalite_pere: string;
+
     nom_mere: string;
     prenom_mere: string;
     profession_mere: string;
     nationalite_mere: string;
+
     email_parent: string;
+
     acte_naissance_pere: File | string | null;
     acte_naissance_mere: File | string | null;
+
     statut: string;
-    motif_rejet: string;
+    motif_rejet: string | null;
+
     agent_hopital_id: number;
     agent_mairie_id: number;
     hopital_id: number;
     mairie_id: number;
+
     created_at: string;
     updated_at: string;
 
+    // Relations et formats
     agent: string;
     date_naissance_formatted: string;
     created_at_formatted: string;
     hopital?: string;
     mairie?: string;
-    agent_hopital?: {
-        name: string;
-    };
+    agent_hopital?: { name: string };
     agent_mairie?: string;
 }
 
-export interface Agent {
-    id: number;
-    name: string;
-    email: string;
-}
-
+// ===================== HELPERS =====================
 export interface Flash {
     success?: string;
     error?: string;
@@ -145,14 +137,11 @@ export interface PaginationData<T> {
     prev_page_url: string | null;
 }
 
-
-
 export interface StatusCounts {
     recues_en_attente: number;
     validees: number;
     rejetees: number;
 }
-
 
 export interface RecentEntity {
     id: number;
@@ -162,8 +151,7 @@ export interface RecentEntity {
     created_at: string;
 }
 
-
-
+// ===================== PROPS =====================
 export interface HopitalDashboardProps {
     declarationsCount: number;
     newDeclarationsCount: number;
@@ -185,11 +173,9 @@ export interface AdminPageProps {
     recentEntities: RecentEntity[];
 }
 
-
-
 export interface ShowProps {
     mairie: Mairie;
-    hopital: Hopital,
+    hopital: Hopital;
     agents: Agent[];
     flash: Flash;
 }
@@ -211,8 +197,7 @@ export interface IndexProps {
         query?: string;
         status?: string;
     };
-    flash: Flash,
+    flash: Flash;
     mairies: PaginationData<Mairie>;
-    hopitaux: PaginationData<Hopital>
+    hopitaux: PaginationData<Hopital>;
 }
-
