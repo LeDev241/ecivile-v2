@@ -34,6 +34,22 @@ export interface Mairie {
     province_id: number;
     commune_id: number;
     arrondissement_id: number;
+
+    province?: {
+        id: number;
+        nom: string;
+    };
+    commune?: {
+        id: number;
+        nom: string;
+    };
+    arrondissement?: {
+        id: number;
+        nom: string;
+    };
+
+    created_at: string;
+    updated_at: string;
 }
 
 export interface Hopital {
@@ -46,6 +62,9 @@ export interface Hopital {
     code_postal: string;
     user_id: number;
     mairie_id: number;
+
+    created_at: string;
+    updated_at: string;
 }
 
 export interface Province {
@@ -97,12 +116,24 @@ export interface Declaration {
     date_naissance_formatted: string;
     created_at_formatted: string;
     hopital?: string;
-    mairie?: string
+    mairie?: string;
     agent_hopital?: {
-        name: string
-    }
-    agent_mairie?: string
+        name: string;
+    };
+    agent_mairie?: string;
 }
+
+export interface Agent {
+    id: number;
+    name: string;
+    email: string;
+}
+
+export interface Flash {
+    success?: string;
+    error?: string;
+}
+
 export interface PaginationData<T> {
     current_page: number;
     last_page: number;
@@ -120,12 +151,9 @@ export interface IndexProps {
         query?: string;
         status?: string;
     };
-    flash?: {
-        success?: string;
-        error?: string;
-    };
+    flash: Flash,
+    mairies: PaginationData<Mairie>;
 }
-
 
 export interface StatusCounts {
     recues_en_attente: number;
@@ -133,28 +161,49 @@ export interface StatusCounts {
     rejetees: number;
 }
 
-
 export interface PageProps {
     declaration: Declaration;
     provinces: Province[];
     communes: Commune[];
     arrondissements: Arrondissement[];
-    mairie?: Mairie;
+    mairie: Mairie;
     user: User;
-    hopital?: Hopital;
+    hopital: Hopital;
 }
 
 export interface HopitalDashboardProps {
     declarationsCount: number;
     newDeclarationsCount: number;
     recentDeclarations: Declaration[];
-    user: User
+    user: User;
 }
 
 export interface MairieDashboardProps {
     statusCounts: StatusCounts;
     newDeclarationsCount: number;
     recentDeclarations: Declaration[];
-    user: User
+    user: User;
+}
 
+export interface RecentEntity {
+    id: number;
+    nom: string;
+    adresse_complete?: string | null;
+    type: 'mairie' | 'hopital' | 'user';
+    created_at: string;
+}
+
+export interface AdminPageProps {
+    mairiesCount: number;
+    hopitauxCount: number;
+    usersCount: number;
+    recentEntities: RecentEntity[];
+}
+
+
+
+export interface ShowProps {
+    mairie: Mairie;
+    agents: Agent[];
+    flash: Flash;
 }

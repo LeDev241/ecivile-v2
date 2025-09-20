@@ -1,15 +1,18 @@
 import StatCard from '@/components/StatCard';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/admin-layout';
+import { AdminPageProps } from '@/types/types';
 import { Head, Link } from '@inertiajs/react';
 import { CircleUserIcon, Hospital, Landmark, MapPin, Plus } from 'lucide-react';
 
-export default function Dashboard({ mairiesCount, hopitauxCount, usersCount, recentEntities }) {
+
+
+export default function Dashboard({ mairiesCount, hopitauxCount, usersCount, recentEntities }: AdminPageProps) {
     return (
         <AdminLayout>
             <Head title="Dashboard Admin" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <StatCard icon={Landmark} title="Mairies" value={mairiesCount} bgColor="bg-blue-500" />
                     <StatCard icon={Hospital} title="Hopitaux" value={hopitauxCount} bgColor="bg-yellow-500" />
                     <StatCard icon={CircleUserIcon} title="Utilisateurs" value={usersCount} bgColor="bg-green-500" />
