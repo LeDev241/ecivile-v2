@@ -2,27 +2,21 @@ import ChartCard from '@/components/ChartCard';
 import ReusableChart from '@/components/ReusableChart';
 import StatCard from '@/components/StatCard';
 import { Badge } from '@/components/ui/badge';
-import HopitalLayout from '@/layouts/hopital-layout';
+import MairieLayout from '@/layouts/mairie-Layout';
 import { BreadcrumbItem } from '@/types';
 import { StatisticProps } from '@/types/types';
 import { Head } from '@inertiajs/react';
-import { BarChart3, Calendar, FolderPlus, TrendingUp, UserCheck, Users } from 'lucide-react';
-
+import { BarChart3, Calendar, Clock, FolderPlus, UserCheck } from 'lucide-react';
 
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Statistiques des Déclarations',
+        title: 'Statistiques Mairie',
         href: route('dashboard'),
     },
 ];
 
-export default function Statistic({ totalDeclarations, bySex, byCreator, byYear, byMonth, byStatus }: StatisticProps) {
-    const bySexData = Object.entries(bySex).map(([key, value]) => ({
-        name: key === 'M' ? 'Masculin' : key === 'F' ? 'Féminin' : key,
-        value,
-    }));
-
+export default function Statistic({ totalDeclarations, totalPending, byCreator, byYear, byMonth, byStatus }: StatisticProps) {
     const byCreatorData = Object.entries(byCreator).map(([key, value]) => ({
         name: key,
         value,
@@ -37,27 +31,27 @@ export default function Statistic({ totalDeclarations, bySex, byCreator, byYear,
         : { name: 'Aucun', value: 0 };
 
     return (
-        <HopitalLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tableau de Bord - Statistiques des Déclarations" />
+        <MairieLayout breadcrumbs={breadcrumbs}>
+            <Head title="Tableau de Bord - Statistiques Mairie" />
 
             <div className="flex flex-col gap-6 p-4">
                 {/* Top Stats */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <StatCard title="Total déclarations" value={totalDeclarations.toLocaleString()} icon={FolderPlus} bgColor="bg-blue-600" />
-                    <StatCard title="Agents actifs" value={Object.keys(byCreator).length} icon={UserCheck} bgColor="bg-purple-600" />
-                    <StatCard title="Agent le plus actif" value={mostActiveCreator.name} icon={TrendingUp} bgColor="bg-orange-600" />
+                    <StatCard title="En attente " value={totalPending.toLocaleString()} icon={Clock} bgColor="bg-yellow-600" />
+                    <StatCard title="Validées/Rejetées" value={totalDeclarations.toLocaleString()} icon={FolderPlus} bgColor="bg-blue-600" />
+                    <StatCard title="Agents actifs" value={mostActiveCreator.name} icon={UserCheck} bgColor="bg-purple-600" />
                     <StatCard title="Années couvertes" value={Object.keys(byYear).length} icon={Calendar} bgColor="bg-green-600" />
                 </div>
 
                 {/* Charts Section */}
                 <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                    {/* Répartition par sexe */}
-                    <ChartCard title="Répartition par genre" subtitle="Naissances par sexe" icon={Users}>
-                        <ReusableChart type="pie" data={bySexData} dataKey="value" nameKey="name" height={320} />
+                    {/* Répartition par statut */}
+                    <ChartCard title="Répartition par statut" subtitle="Validations / Rejets" icon={FolderPlus}>
+                        <ReusableChart type="pie" data={byStatusData} dataKey="value" nameKey="name" height={320} />
                     </ChartCard>
 
                     {/* Performance des agents */}
-                    <ChartCard title="Performance des agents" subtitle="Volume des déclarations" icon={UserCheck}>
+                    <ChartCard title="Performance des agents" subtitle="Traitement des déclarations" icon={UserCheck}>
                         <ReusableChart type="bar" data={byCreatorData} dataKey="value" xAxisKey="name" height={320} />
                     </ChartCard>
                 </div>
@@ -74,8 +68,8 @@ export default function Statistic({ totalDeclarations, bySex, byCreator, byYear,
                     </ChartCard>
                 </div>
 
-                {/* Répartition par statut */}
-                <ChartCard title="Répartition par statut" subtitle="Validations et rejets" icon={FolderPlus}>
+                {/* Statuts détaillés */}
+                <ChartCard title="Détails par statut" subtitle="Nombre de déclarations par statut" icon={FolderPlus}>
                     <div className="flex flex-wrap gap-4">
                         {byStatusData.map((item) => (
                             <div key={item.name} className="flex w-52 items-center justify-between rounded-lg border bg-white p-3 shadow-sm">
@@ -96,6 +90,6 @@ export default function Statistic({ totalDeclarations, bySex, byCreator, byYear,
                     </div>
                 </ChartCard>
             </div>
-        </HopitalLayout>
+        </MairieLayout>
     );
 }

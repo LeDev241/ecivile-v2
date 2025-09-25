@@ -7,8 +7,19 @@ import { BreadcrumbItem } from '@/types';
 import { HopitalDashboardProps } from '@/types/types';
 import { Head, Link } from '@inertiajs/react';
 import { Eye, FolderPlus, Plus, Users } from 'lucide-react';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-export default function HopitalDashboard({ declarationsCount, newDeclarationsCount, recentDeclarations, user }: HopitalDashboardProps) {
+const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
+
+export default function HopitalDashboard({
+    declarationsCount,
+    newDeclarationsCount,
+    recentDeclarations,
+    bySex,
+    byStatus,
+    mostActiveAgent,
+    user,
+}: HopitalDashboardProps) {
     const getBadgeColor = (statut: string) => {
         switch (statut) {
             case 'validee':
@@ -22,50 +33,122 @@ export default function HopitalDashboard({ declarationsCount, newDeclarationsCou
         }
     };
 
-    const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: `Tableau de bord - ${user.hopital?.nom}`,
-            href: route('dashboard'),
-        },
-    ]
+    const breadcrumbs: BreadcrumbItem[] = [{ title: `Tableau de bord - ${user.hopital?.nom}`, href: route('dashboard') }];
+
+    // Préparer données pour graphiques
+    const bySexData = Object.entries(bySex).map(([key, value]) => ({
+        name: key === 'masculin' ? 'Masculin' : 'Féminin',
+        value,
+    }));
+
+    const byStatusData = Object.entries(byStatus).map(([key, value]) => ({
+        name: key,
+        value,
+    }));
 
     return (
         <HopitalLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Tablea de bord - ${user.hopital?.nom}`}/>
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 ">
-                    <StatCard
-                        icon={FolderPlus}
-                        title="Déclarations au total"
-                        value={declarationsCount}
-                        bgColor="bg-gradient-to-br from-indigo-500 to-blue-500"
-                    />
-                    <StatCard
-                        icon={Users}
-                        title="Depuis les (7j) derniers"
-                        value={newDeclarationsCount}
-                        bgColor="bg-gradient-to-br from-purple-500 to-indigo-500"
-                    />
+            <Head title={`Tableau de bord - ${user.hopital?.nom}`} />
+
+            <div className="flex flex-col gap-6 p-4">
+                {/* Stat cards */}
+                <div className="flex flex-col gap-4 sm:flex-row">
+                    {/* Statistiques */}
+                    <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                        <StatCard
+                            icon={FolderPlus}
+                            title="Total déclarations"
+                            value={declarationsCount}
+                            bgColor="bg-gradient-to-br from-indigo-500 to-blue-500 shadow-lg"
+                        />
+                        <StatCard
+                            icon={Users}
+                            title="Derniers 7 jours"
+                            value={newDeclarationsCount}
+                            bgColor="bg-gradient-to-br from-purple-500 to-indigo-500 shadow-lg"
+                        />
+                        <StatCard
+                            icon={Users}
+                            title="Agent le plus actif"
+                            value={mostActiveAgent || 'Aucun'}
+                            bgColor="bg-gradient-to-br from-green-500 to-teal-500 shadow-lg"
+                        />
+                    </div>
+
+                    {/* Actions */}
+                    <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800">
+                        <h2 className="text-xl font-bold text-green-600">Actions</h2>
+                        <div className="flex flex-col gap-3">
+                            {/* Nouveau bouton déclaration */}
+                            <Link
+                                href={route('hopital.declarations.create')}
+                                className="flex transform items-center justify-center gap-2 rounded-lg bg-blue-500 p-4 font-semibold text-white shadow transition hover:shadow-md"
+                            >
+                                <Plus size={18} /> Nouvelle déclaration
+                            </Link>
+
+                            {/* Voir la liste */}
+                            <Link
+                                href={route('hopital.declarations.index')}
+                                className="flex transform items-center justify-center gap-2 rounded-lg border border-indigo-500 p-4 font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50"
+                            >
+                                <FolderPlus size={18} /> Voir la liste
+                            </Link>
+                        </div>
+                    </div>
                 </div>
-                <div className="space-y-4 rounded-md border border-gray-200 p-4">
-                    <h2 className="text-xl text-gray-500">Actions</h2>
-                    <div className="grid grid-cols-1 space-x-2 sm:grid-cols-3">
-                        <Link href={route('hopital.declarations.create')}>
-                            <Button className="w-full">
-                                <Plus size={5} /> Faire une déclararation
-                            </Button>
-                        </Link>
-                        <Link href={route('hopital.declarations.index')}>
-                            <Button variant="outline" className="w-full">
-                                <FolderPlus size={5} /> Voir la liste
-                            </Button>
-                        </Link>
+                {/* Graphiques */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {/* Déclarations par sexe */}
+                    <div className="rounded-lg border p-4">
+                        <h3 className="mb-2 font-semibold">Répartition par sexe</h3>
+                        {bySexData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height={250}>
+                                <PieChart>
+                                    <Pie data={bySexData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                                        {bySexData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                    <Legend verticalAlign="bottom" height={36} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <p className="text-gray-500">Aucune donnée.</p>
+                        )}
+                    </div>
+
+                    {/* Déclarations par statut */}
+                    <div className="rounded-lg border p-4">
+                        <h3 className="mb-2 font-semibold">Répartition par statut</h3>
+                        {byStatusData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height={250}>
+                                <BarChart data={byStatusData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="value">
+                                        {byStatusData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <p className="text-gray-500">Aucune donnée.</p>
+                        )}
                     </div>
                 </div>
 
+                {/* Actions */}
+
+                {/* Déclarations récentes */}
                 <div className="w-full">
                     <h2 className="mb-4 text-lg font-semibold text-gray-800">Déclarations récentes</h2>
-                    <div className="relative overflow-auto rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <div className="relative overflow-auto rounded-xl border border-gray-200 bg-white">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -80,19 +163,19 @@ export default function HopitalDashboard({ declarationsCount, newDeclarationsCou
                             </TableHeader>
                             <TableBody>
                                 {recentDeclarations.length > 0 ? (
-                                    recentDeclarations.map((declaration) => (
-                                        <TableRow key={declaration.id}>
-                                            <TableCell>{declaration.code_nuin}</TableCell>
-                                            <TableCell>{declaration.nom_enfant}</TableCell>
-                                            <TableCell>{declaration.date_naissance_formatted}</TableCell>
-                                            <TableCell>{declaration.agent}</TableCell>
-                                            <TableCell>{declaration.created_at_formatted}</TableCell>
+                                    recentDeclarations.map((d) => (
+                                        <TableRow key={d.id}>
+                                            <TableCell>{d.code_nuin}</TableCell>
+                                            <TableCell>{d.nom_enfant}</TableCell>
+                                            <TableCell>{d.date_naissance}</TableCell>
+                                            <TableCell>{d.agent_hopital?.name || 'Inconnu'}</TableCell>
+                                            <TableCell>{d.created_at}</TableCell>
                                             <TableCell>
-                                                <Badge className={getBadgeColor(declaration.statut)}>{declaration.statut}</Badge>
+                                                <Badge className={getBadgeColor(d.statut)}>{d.statut}</Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <Button variant="outline" size="sm" asChild>
-                                                    <Link href={route('hopital.declarations.show', declaration.id)}>
+                                                    <Link href={route('hopital.declarations.show', d.id)}>
                                                         <Eye className="mr-1 h-4 w-4" />
                                                     </Link>
                                                 </Button>

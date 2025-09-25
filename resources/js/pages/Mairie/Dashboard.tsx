@@ -76,7 +76,7 @@ export default function MairieDashboard({ statusCounts, recentDeclarations, user
                                         <TableRow key={declaration.id}>
                                             <TableCell>{declaration.code_nuin}</TableCell>
                                             <TableCell>
-                                                {declaration.nom_enfant} {declaration.prenom_enfant}
+                                                {declaration.nom_enfant} 
                                             </TableCell>
                                             <TableCell>{declaration.hopital}</TableCell>
                                             <TableCell>

@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\Hopital\StatisticController;
+use App\Http\Controllers\Hopital\StatisticController as HopitalStatisticController;
+use App\Http\Controllers\Mairie\StatisticController as MairieStatisticController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -97,7 +98,7 @@ Route::middleware(['auth', 'verified'])->prefix('hopital')->name('hopital.')->gr
     Route::post('/declarations/{declaration}/submit', [HopitalDeclarationController::class, 'submitDeclaration'])->name('declarations.submit');
     Route::get('declarations/{declaration}/download', [HopitalDeclarationController::class, 'download'])->name('declarations.download');
     // Statistiques pour l'hôpital
-    Route::get('/statistic', [StatisticController::class, 'index'])->name('declarations.statistic');
+    Route::get('/statistic', [HopitalStatisticController::class, 'index'])->name('declarations.statistic');
 
 });
 
@@ -113,6 +114,8 @@ Route::middleware(['auth', 'verified'])->prefix('mairie')->name('mairie.')->grou
         ->name('declarations.reject');
     Route::get('/declarations/{id}/download', [MairieDeclarationController::class, 'download'])
         ->name('declarations.download');
+    // Statistiques pour la mairie
+    Route::get('/statistic', [MairieStatisticController::class, 'index'])->name('declarations.statistic');
 
 });
 

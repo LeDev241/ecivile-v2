@@ -118,13 +118,26 @@ export interface Declaration {
     hopital?: string;
     mairie?: string;
     agent_hopital?: { name: string };
-    agent_mairie?: string;
+    agent_mairie?: { name: string };
 }
 
 // ===================== HELPERS =====================
 export interface Flash {
     success?: string;
     error?: string;
+}
+
+export interface BySex {
+    masculin: number;
+    feminin: number;
+}
+
+export interface ByStatus {
+    validee?: number;
+    rejetee?: number;
+    envoyee?: number;
+    en_attente?: number;
+    [key: string]: number | undefined; // permet flexibilité
 }
 
 export interface PaginationData<T> {
@@ -157,6 +170,9 @@ export interface HopitalDashboardProps {
     newDeclarationsCount: number;
     recentDeclarations: Declaration[];
     user: User;
+    bySex: BySex;
+    byStatus: ByStatus;
+    mostActiveAgent: string | null;
 }
 
 export interface MairieDashboardProps {
@@ -164,7 +180,15 @@ export interface MairieDashboardProps {
     newDeclarationsCount: number;
     recentDeclarations: Declaration[];
     user: User;
+    bySex: BySex;
+    byStatus: ByStatus;
+    totalDeclarations: number;
+    byMonth: Record<string, number>;
+    byCreator: Record<string, number>;
+    byYear: Record<string, number>
+
 }
+
 
 export interface AdminPageProps {
     mairiesCount: number;
@@ -200,4 +224,14 @@ export interface IndexProps {
     flash: Flash;
     mairies: PaginationData<Mairie>;
     hopitaux: PaginationData<Hopital>;
+}
+
+export interface StatisticProps {
+    totalDeclarations: number;
+    totalPending: number;
+    bySex: Record<string, number>;
+    byCreator: Record<string, number>;
+    byYear: Record<string, number>;
+    byMonth: Record<string, number>;
+    byStatus: Record<string, number>;
 }

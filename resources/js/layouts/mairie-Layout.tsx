@@ -27,7 +27,7 @@ const mainNavItems: NavItem[] = [
 const footerNavItems: NavItem[] = [
     {
         title: 'Statistique',
-        href: '#',
+        href: route('mairie.declarations.statistic'),
         icon: ChartColumnBig,
     },
     {

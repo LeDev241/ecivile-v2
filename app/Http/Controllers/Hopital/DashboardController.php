@@ -7,6 +7,7 @@ use App\Models\Declaration;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -14,36 +15,56 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Vérifier que l'utilisateur est un agent d'hôpital
         if (!$user->isHopital() || !$user->hopital_id) {
             abort(403, 'Accès non autorisé. Vous devez être un agent d\'hôpital.');
         }
 
+        $hopitalId = $user->hopital_id;
 
-
-        // Statistiques des déclarations pour l'hôpital de l'utilisateur connecté
-        $declarationsCount = Declaration::where('hopital_id', $user->hopital_id)->count();
-
-        // Nouvelles déclarations (créées dans les 7 derniers jours)
-        $newDeclarationsCount = Declaration::where('hopital_id', $user->hopital_id)
+        // Totaux
+        $declarationsCount = Declaration::where('hopital_id', $hopitalId)->count();
+        $newDeclarationsCount = Declaration::where('hopital_id', $hopitalId)
             ->where('created_at', '>=', Carbon::now()->subDays(7))
             ->count();
 
-        // Récentes déclarations pour l'hôpital de l'utilisateur
-        $recentDeclarations = Declaration::where('hopital_id', $user->hopital_id)
+        // Répartition par sexe
+        $bySex = Declaration::select('sexe', DB::raw('COUNT(*) as total'))
+            ->where('hopital_id', $hopitalId)
+            ->groupBy('sexe')
+            ->pluck('total', 'sexe');
+
+        // Répartition par statut
+        $byStatus = Declaration::select('statut', DB::raw('COUNT(*) as total'))
+            ->where('hopital_id', $hopitalId)
+            ->groupBy('statut')
+            ->pluck('total', 'statut');
+
+        // Agent le plus actif
+        $byAgent = Declaration::join('users', 'declarations.agent_hopital_id', '=', 'users.id')
+            ->where('declarations.hopital_id', $hopitalId)
+            ->select('users.name', DB::raw('COUNT(declarations.id) as total'))
+            ->groupBy('users.name')
+            ->orderByDesc('total')
+            ->pluck('total', 'name');
+
+        $mostActiveAgent = $byAgent->keys()->first() ?? null;
+
+        // Déclarations récentes
+        $recentDeclarations = Declaration::where('hopital_id', $hopitalId)
             ->with(['agentHopital'])
             ->latest()
             ->take(5)
             ->get();
 
-        // Charger les informations de l'hôpital affilié
         $user->load('hopital');
 
         return Inertia::render('Hopital/Dashboard', [
-
             'declarationsCount' => $declarationsCount,
             'newDeclarationsCount' => $newDeclarationsCount,
             'recentDeclarations' => $recentDeclarations,
+            'bySex' => $bySex,
+            'byStatus' => $byStatus,
+            'mostActiveAgent' => $mostActiveAgent,
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
