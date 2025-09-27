@@ -298,7 +298,7 @@ class DeclarationController extends Controller
         }
         $filename .= '.pdf';
 
-        $pdf = Pdf::loadView('pdf.hopital_declaration', compact('Attestation de declaration'));
+        $pdf = Pdf::loadView('pdf.hopital_declaration', compact('declaration'));
 
         return $pdf->download($filename);
     }

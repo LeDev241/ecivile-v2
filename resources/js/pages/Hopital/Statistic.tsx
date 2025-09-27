@@ -78,8 +78,8 @@ export default function Statistic({ totalDeclarations, bySex, byCreator, byYear,
                 <ChartCard title="Répartition par statut" subtitle="Validations et rejets" icon={FolderPlus}>
                     <div className="flex flex-wrap gap-4">
                         {byStatusData.map((item) => (
-                            <div key={item.name} className="flex w-52 items-center justify-between rounded-lg border bg-white p-3 shadow-sm">
-                                <span className="font-medium text-gray-800">{item.name}</span>
+                            <div key={item.name} className="flex w-52 items-center justify-between rounded-lg border  p-3 shadow-sm">
+                                <span className="font-medium text-gray-800 dark:text-white">{item.name}</span>
                                 <Badge
                                     className={`rounded-full px-2 py-1 text-xs ${
                                         item.name === 'validee'

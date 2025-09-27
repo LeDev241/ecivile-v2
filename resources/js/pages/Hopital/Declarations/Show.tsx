@@ -31,7 +31,7 @@ export default function Show({ declaration }: PageProps) {
         <HopitalLayout>
             <Head title="Détails de la Déclaration" />
             <div className="p-4">
-                <h1 className="mb-4 text-lg font-semibold text-gray-800">Détails de la Déclaration</h1>
+                <h1 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">Détails de la Déclaration</h1>
 
                 <div className="min-h-[100vh] flex-1 space-y-6 overflow-hidden rounded-xl border border-sidebar-border/70 p-4 md:min-h-min dark:border-sidebar-border">
                     {/* Section Informations de l'enfant */}
@@ -58,11 +58,7 @@ export default function Show({ declaration }: PageProps) {
                             <div>
                                 <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Date de naissance</Label>
                                 <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                    {new Date(declaration.date_naissance).toLocaleDateString('fr-FR', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                    })}
+                                    {declaration.date_naissance_formatted}
                                 </p>
                             </div>
                             <div>

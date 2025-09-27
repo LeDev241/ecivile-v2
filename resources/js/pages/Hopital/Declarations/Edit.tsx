@@ -62,7 +62,7 @@ export default function Edit({ declaration }: PageProps) {
         <HopitalLayout>
             <Head title="Modifier une déclaration" />
             <div className="p-4">
-                <h1 className="mb-4 text-lg font-semibold text-gray-800">Modifier la Déclaration </h1>
+                <h1 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">Modifier la Déclaration </h1>
 
                 <form
                     onSubmit={submit}
