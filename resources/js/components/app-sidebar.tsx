@@ -29,6 +29,7 @@ export function AppSidebar({ mainNavItems = [], footerNavItems = [] }: AppSideba
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />
+                
             </SidebarContent>
 
             <SidebarFooter>

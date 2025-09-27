@@ -63,7 +63,6 @@ class DashboardController extends Controller
       'newDeclarationsCount' => $newDeclarationsCount,
       'recentDeclarations' => $recentDeclarations,
       'bySex' => $bySex,
-      'byStatus' => $byStatus,
       'mostActiveAgent' => $mostActiveAgent,
       'user' => [
         'id' => $user->id,

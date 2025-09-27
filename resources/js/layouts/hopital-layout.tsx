@@ -18,7 +18,7 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Faire une déclaration',
+        title: 'Nouvelle déclaration',
         href: route('hopital.declarations.create'),
         icon: Plus,
     },

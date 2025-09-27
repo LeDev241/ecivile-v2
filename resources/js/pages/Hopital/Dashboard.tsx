@@ -6,8 +6,8 @@ import HopitalLayout from '@/layouts/hopital-layout';
 import { BreadcrumbItem } from '@/types';
 import { HopitalDashboardProps } from '@/types/types';
 import { Head, Link } from '@inertiajs/react';
-import { Eye, FolderPlus, Plus, Users } from 'lucide-react';
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { ChartColumnBig, Eye, FolderPlus, Plus, Users } from 'lucide-react';
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
 
@@ -16,7 +16,6 @@ export default function HopitalDashboard({
   newDeclarationsCount,
   recentDeclarations,
   bySex,
-  byStatus,
   mostActiveAgent,
   user,
 }: HopitalDashboardProps) {
@@ -41,64 +40,64 @@ export default function HopitalDashboard({
     value,
   }));
 
-  const byStatusData = Object.entries(byStatus).map(([key, value]) => ({
-    name: key,
-    value,
-  }));
+  
 
   return (
     <HopitalLayout breadcrumbs={breadcrumbs}>
       <Head title={`Tableau de bord - ${user.hopital?.nom}`} />
 
       <div className="flex flex-col gap-6 p-4">
-        {/* Stat cards */}
-        <div className="flex flex-col gap-4 sm:flex-row">
-          {/* Statistiques */}
-          <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-            <StatCard
-              icon={FolderPlus}
-              title="Total déclarations"
-              value={declarationsCount}
-              bgColor="bg-gradient-to-br from-indigo-500 to-blue-500 shadow-lg"
-            />
-            <StatCard
-              icon={Users}
-              title="Derniers 7 jours"
-              value={newDeclarationsCount}
-              bgColor="bg-gradient-to-br from-purple-500 to-indigo-500 shadow-lg"
-            />
-            <StatCard
-              icon={Users}
-              title="Agent le plus actif"
-              value={mostActiveAgent || 'Aucun'}
-              bgColor="bg-gradient-to-br from-green-500 to-teal-500 shadow-lg"
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800">
-            <h2 className="text-xl font-bold text-green-600">Actions</h2>
-            <div className="flex flex-col gap-3">
-              {/* Nouveau bouton déclaration */}
-              <Link
-                href={route('hopital.declarations.create')}
-                className="flex transform items-center justify-center gap-2 rounded-lg bg-blue-500 p-4 font-semibold text-white shadow transition hover:shadow-md"
-              >
-                <Plus size={18} /> Nouvelle déclaration
-              </Link>
-
-              {/* Voir la liste */}
-              <Link
-                href={route('hopital.declarations.index')}
-                className="flex transform items-center justify-center gap-2 rounded-lg border border-indigo-500 p-4 font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50"
-              >
-                <FolderPlus size={18} /> Voir la liste
-              </Link>
-            </div>
-          </div>
+        <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <StatCard
+            icon={FolderPlus}
+            title="Total déclarations"
+            value={declarationsCount}
+            bgColor="bg-gradient-to-br from-indigo-500 to-blue-500 shadow-lg"
+          />
+          <StatCard
+            icon={Users}
+            title="Derniers 7 jours"
+            value={newDeclarationsCount}
+            bgColor="bg-gradient-to-br from-purple-500 to-indigo-500 shadow-lg"
+          />
+          <StatCard
+            icon={Users}
+            title="Agent le plus actif"
+            value={mostActiveAgent || 'Aucun'}
+            bgColor="bg-gradient-to-br from-green-500 to-teal-500 shadow-lg"
+          />
         </div>
+
         {/* Graphiques */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="space-y-3 rounded-lg border p-4 shadow">
+            <h3 className="mb-2 font-semibold">Actions</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <div className="flex flex-col justify-end gap-3">
+                <Link
+                  href={route('hopital.declarations.create')}
+                  className="mt-1 flex items-center gap-2 rounded-md bg-blue-50 px-3 py-4 text-blue-700 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Nouvelle déclaration</span>
+                </Link>
+                <Link
+                  href={route('hopital.declarations.index')}
+                  className="mt-1 flex items-center gap-2 rounded-md bg-green-50 px-3 py-4 text-green-700 transition hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-800"
+                >
+                  <FolderPlus className="h-4 w-4" />
+                  <span>Liste des déclarations</span>
+                </Link>
+
+                <Link
+                  href={route('hopital.declarations.statistic')}
+                  className="mt-1 flex items-center gap-2 rounded-md bg-gradient-to-br from-purple-500 to-indigo-500 px-3 py-4 text-white dark:bg-blue-900/30 dark:hover:bg-blue-800"
+                >
+                  <ChartColumnBig size={18} /> Statistiques
+                </Link>
+              </div>
+            </ResponsiveContainer>
+          </div>
           {/* Déclarations par sexe */}
           <div className="rounded-lg border p-4">
             <h3 className="mb-2 font-semibold">Répartition par sexe</h3>
@@ -118,37 +117,12 @@ export default function HopitalDashboard({
               <p className="text-gray-500">Aucune donnée.</p>
             )}
           </div>
-
-          {/* Déclarations par statut */}
-          <div className="rounded-lg border p-4">
-            <h3 className="mb-2 font-semibold">Répartition par statut</h3>
-            {byStatusData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={byStatusData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="value">
-                    {byStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <p className="text-gray-500">Aucune donnée.</p>
-            )}
-          </div>
         </div>
-
-        {/* Actions */}
 
         {/* Déclarations récentes */}
         <div className="w-full">
           <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">Déclarations récentes</h2>
-          <div className="relative overflow-auto rounded-xl border ">
+          <div className="relative overflow-auto rounded-xl border">
             <Table>
               <TableHeader>
                 <TableRow>
